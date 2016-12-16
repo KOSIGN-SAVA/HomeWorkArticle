@@ -9,6 +9,6 @@
 import Foundation
 
 protocol ModelProtocol {
-    func success(_ article:[Article])
-    func error()
+    func success(_ article:[Article], method:String, index:Int)
+    func error(method:String)
 }

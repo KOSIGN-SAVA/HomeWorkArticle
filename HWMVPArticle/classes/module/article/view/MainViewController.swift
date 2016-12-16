@@ -27,6 +27,11 @@ class MainViewController: UIViewController {
         return "\(date)"
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        presenter?.fetchArticle(page: 1, limit: 15)
+        tableView.reloadData()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         //self.navigationItem.rightBarButtonItem = self.editButtonItem
@@ -64,25 +69,27 @@ extension MainViewController:UITableViewDelegate, UITableViewDataSource {
         return true
     }
     
-//    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-//        let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { (action, indexPath) in
-//            self.presenter?.deleteArticle(id: self.articles[indexPath.row].id)
-//        }
-//        
-//        let editAction = UITableViewRowAction(style: .normal, title: "Edit") { (action, indexPath) in
-//            // share item at indexPath
-//        }
-//        editAction.backgroundColor = UIColor.purple
-//        return [deleteAction, editAction]
-//    }
-    
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            self.presenter?.deleteArticle(id: self.articles[indexPath.row].id)
-            articles.remove(at: indexPath.row)
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { (action, indexPath) in
+            self.presenter?.deleteArticle(id: self.articles[indexPath.row].id, index: indexPath.row)
+            self.articles.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.fade)
         }
+        
+        let editAction = UITableViewRowAction(style: .normal, title: "Edit") { (action, indexPath) in
+            // share item at indexPath
+        }
+        editAction.backgroundColor = UIColor.purple
+        return [deleteAction, editAction]
     }
+    
+//    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+//        if editingStyle == .delete {
+//            self.presenter?.deleteArticle(id: self.articles[indexPath.row].id, index: indexPath.row)
+//            articles.remove(at: indexPath.row)
+//            tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.fade)
+//        }
+//    }
     
 }
 
@@ -92,9 +99,22 @@ extension MainViewController:ArticlePresenterProtocol{
         print("start fetch article")
     }
     
-    func responseData(_ data: [Article]) {
-        articles.append(contentsOf: data)
-        tableView.reloadData()
+    func responseData(_ data: [Article], method:String, index:Int) {
+        switch method {
+        case "GET":
+            articles.append(contentsOf: data)
+            tableView.reloadData()
+            print("Get data successfully!")
+        case "DELETE":
+            print("Delete successfully! \(index)")
+            //articles.remove(at: index)
+            tableView.reloadData()
+        case "POST":
+            print("Post successfully!")
+            tableView.reloadData()
+        default:
+            break
+        }
     }
     
     func responseDataError() {

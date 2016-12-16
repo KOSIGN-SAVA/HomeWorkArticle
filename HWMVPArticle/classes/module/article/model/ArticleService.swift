@@ -23,11 +23,6 @@ class ArticleService{
     }
     
     func fetchArticleDataFromAPI(page:Int, limit:Int) {
-//        let url=URL(string: "\(ARTICLE_URL)?page=\(page)&limit=\(limit)")
-//        var request=URLRequest(url: url!)
-//        request.addValue(HEADER, forHTTPHeaderField: ATHENTICATION)
-//        request.addValue("*/*", forHTTPHeaderField: "Accept")
-//        let session=URLSession.shared
         let url="\(ARTICLE_URL)?page=\(page)&limit=\(limit)"
         let api=apiConfig(urlApi: url, methodType: "GET")
         api.0.dataTask(with: api.1, completionHandler: {(responseBody, httpResponse, error) in
@@ -41,21 +36,67 @@ class ArticleService{
                     art.title=data["TITLE"] as! String
                     art.createDate=data["CREATED_DATE"] as! String
                     art.description=data["DESCRIPTION"] as! String
-                    art.image=data["IMAGE"] as! String
+                    if data["IMAGE"] is NSNull{
+                        art.image=""
+                    }else{
+                        art.image=data["IMAGE"] as! String
+                    }
                     arrArticle.append(art)
                 }
-                self.delegate?.success(arrArticle)
+                self.delegate?.success(arrArticle, method: "GET", index: 0)
             }else{
-                self.delegate?.error()
+                self.delegate?.error(method: "GET")
             }
         }).resume()
     }
     
-    func deleteArticleDataFromAPI(id:Int){
+    func deleteArticleDataFromAPI(id:Int, index:Int){
         let delete=apiConfig(urlApi: "\(ARTICLE_URL)/\(id)", methodType: "DELETE")
         delete.0.dataTask(with: delete.1, completionHandler: {(responseBody, httpResponse, error) in
-            print("Delete successfully: \(ARTICLE_URL)/\(id)")
+            if error==nil{
+                self.delegate?.success([], method: "DELETE", index: index)
+            }else{
+                self.delegate?.error(method: "DELETE")
+            }
+        }).resume()
+    }
+    
+    func postArticleDataToAPI(titleArticle:String, descriptionArticle:String, imageLink:String){
+        let data=[
+            "TITLE":titleArticle,
+            "DESCRIPTION":descriptionArticle,
+            "AUTHOR": 0,
+            "CATEGORY_ID": 0,
+            "STATUS": "active",
+            "IMAGE": imageLink
+        ] as [String:Any]
+        var post=apiConfig(urlApi: ARTICLE_URL, methodType: "POST")
+        post.1.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        post.1.httpBody=try! JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
+        post.0.dataTask(with: post.1, completionHandler: {(responseBody, httpResponse, error) in
+            if error==nil{
+                self.delegate?.success([], method: "POST", index: 0)
+            }else{
+                self.delegate?.error(method: "POST")
+            }
         }).resume()
     }
     
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

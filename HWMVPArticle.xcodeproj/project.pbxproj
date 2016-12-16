@@ -20,6 +20,7 @@
 		F784F49C1E01AE1E00B27894 /* ArticleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F784F49B1E01AE1E00B27894 /* ArticleService.swift */; };
 		F784F49E1E01B2C300B27894 /* SupportingFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F784F49D1E01B2C300B27894 /* SupportingFile.swift */; };
 		F784F4A01E01C28800B27894 /* ArticleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F784F49F1E01C28800B27894 /* ArticleCell.swift */; };
+		FB0975941E03DF370058D270 /* AddArticleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB0975931E03DF370058D270 /* AddArticleViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +38,7 @@
 		F784F49D1E01B2C300B27894 /* SupportingFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SupportingFile.swift; sourceTree = "<group>"; };
 		F784F49F1E01C28800B27894 /* ArticleCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArticleCell.swift; sourceTree = "<group>"; };
 		F7FD68841E01376B006CA1B4 /* HWMVPArticle.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HWMVPArticle.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FB0975931E03DF370058D270 /* AddArticleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddArticleViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,6 +113,7 @@
 				F784F4861E01A1BB00B27894 /* Main.storyboard */,
 				F784F4871E01A1BB00B27894 /* MainViewController.swift */,
 				F784F49F1E01C28800B27894 /* ArticleCell.swift */,
+				FB0975931E03DF370058D270 /* AddArticleViewController.swift */,
 			);
 			path = view;
 			sourceTree = "<group>";
@@ -233,6 +236,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F784F4901E01A1BB00B27894 /* AppDelegate.swift in Sources */,
+				FB0975941E03DF370058D270 /* AddArticleViewController.swift in Sources */,
 				F784F49A1E01ACF900B27894 /* ModelProtocol.swift in Sources */,
 				F784F49E1E01B2C300B27894 /* SupportingFile.swift in Sources */,
 				F784F48F1E01A1BB00B27894 /* MainViewController.swift in Sources */,
