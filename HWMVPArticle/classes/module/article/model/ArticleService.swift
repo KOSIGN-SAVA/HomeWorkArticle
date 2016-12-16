@@ -12,13 +12,25 @@ class ArticleService{
     
     var delegate:ModelProtocol?
     
-    func fetchArticleDataFromAPI() {
-        let url=URL(string: ARTICLE_URL)
+    func apiConfig(urlApi:String, methodType:String)->(URLSession, URLRequest){
+        let url=URL(string: urlApi)
         var request=URLRequest(url: url!)
         request.addValue(HEADER, forHTTPHeaderField: ATHENTICATION)
         request.addValue("*/*", forHTTPHeaderField: "Accept")
+        request.httpMethod=methodType
         let session=URLSession.shared
-        session.dataTask(with: request, completionHandler: {(responseBody, httpResponse, error) in
+        return (session, request)
+    }
+    
+    func fetchArticleDataFromAPI(page:Int, limit:Int) {
+//        let url=URL(string: "\(ARTICLE_URL)?page=\(page)&limit=\(limit)")
+//        var request=URLRequest(url: url!)
+//        request.addValue(HEADER, forHTTPHeaderField: ATHENTICATION)
+//        request.addValue("*/*", forHTTPHeaderField: "Accept")
+//        let session=URLSession.shared
+        let url="\(ARTICLE_URL)?page=\(page)&limit=\(limit)"
+        let api=apiConfig(urlApi: url, methodType: "GET")
+        api.0.dataTask(with: api.1, completionHandler: {(responseBody, httpResponse, error) in
             if error==nil {
                 let json=try! JSONSerialization.jsonObject(with: responseBody!, options: .allowFragments) as! [String:AnyObject]
                 let arrData=json["DATA"] as! [AnyObject]
@@ -36,6 +48,13 @@ class ArticleService{
             }else{
                 self.delegate?.error()
             }
+        }).resume()
+    }
+    
+    func deleteArticleDataFromAPI(id:Int){
+        let delete=apiConfig(urlApi: "\(ARTICLE_URL)/\(id)", methodType: "DELETE")
+        delete.0.dataTask(with: delete.1, completionHandler: {(responseBody, httpResponse, error) in
+            print("Delete successfully: \(ARTICLE_URL)/\(id)")
         }).resume()
     }
     

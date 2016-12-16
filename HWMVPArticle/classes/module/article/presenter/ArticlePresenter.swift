@@ -18,9 +18,13 @@ class ArticlePresenter:ModelProtocol{
         data?.delegate=self
     }
     
-    func fetchArticle() {
+    func fetchArticle(page:Int, limit:Int) {
         delegate?.startFetchArticle()
-        data?.fetchArticleDataFromAPI()
+        data?.fetchArticleDataFromAPI(page: page, limit: limit)
+    }
+    
+    func deleteArticle(id:Int){
+        data?.deleteArticleDataFromAPI(id: id)
     }
     
     func success(_ article: [Article]) {
