@@ -42,9 +42,8 @@ class AddArticleViewController: UIViewController, UIImagePickerControllerDelegat
 //        main.postArticleFromMain(titleArti: titleArticle.text!, descArti: descriptionArticle.text!, imgArti: "https:static-secure.guim.co.uk/sys-images/Guardian/Pix/pictures/2013/12/10/1386683878775/POL-POT-006.jpg")
 //        _=navigationController?.popViewController(animated: true)
         
-        presenter?.postArticle(titleArt: titleArticle.text!, descriptionArt: descriptionArticle.text!, imgLink: "")
-        _=navigationController?.popViewController(animated: true)
-        
+        presenter?.postArticle(titleArt: titleArticle.text!, descriptionArt: descriptionArticle.text!, imgLink: "http://i2.mirror.co.uk/incoming/article8372768.ece/ALTERNATES/s810/Pogba-United-main.jpg")
+        //_=navigationController?.popViewController(animated: true)
     }
 
     @IBAction func cancelPress(_ sender: UIBarButtonItem) {
@@ -58,7 +57,12 @@ extension AddArticleViewController:ArticlePresenterProtocol{
         //
     }
     func responseData(_ data: [Article], method: String, index: Int) {
-        print("posted")
+//        let sender=UIBarButtonItem()
+//        cancelPress(sender)
+        DispatchQueue.main.async {
+            _=self.navigationController?.popViewController(animated: true)
+        }
+        print("ff")
     }
     func responseDataError() {
         //

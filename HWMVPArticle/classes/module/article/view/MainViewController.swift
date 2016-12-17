@@ -30,22 +30,26 @@ class MainViewController: UIViewController{
         presenter?.postArticle(titleArt: titleArti, descriptionArt: descArti, imgLink: imgArti)
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        //self.navigationItem.rightBarButtonItem = self.editButtonItem
-        
+//    override func viewDidLoad() {
+//        super.viewDidLoad()
+//        presenter=ArticlePresenter()
+//        presenter?.delegate=self
+//        DispatchQueue.main.async {
+//            self.presenter?.fetchArticle(page: 1, limit: 15)
+//            self.tableView.reloadData()
+//        }
+//    }
+    
+    override func viewWillAppear(_ animated: Bool) {
         presenter=ArticlePresenter()
         presenter?.delegate=self
-    }
-    @IBAction func reloadPress(_ sender: UIBarButtonItem) {
         DispatchQueue.main.async {
             self.presenter?.fetchArticle(page: 1, limit: 15)
             self.tableView.reloadData()
         }
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        print("loaded!")
+    @IBAction func reloadPress(_ sender: UIBarButtonItem) {
         DispatchQueue.main.async {
             self.presenter?.fetchArticle(page: 1, limit: 15)
             self.tableView.reloadData()
@@ -112,16 +116,17 @@ extension MainViewController:ArticlePresenterProtocol{
     func responseData(_ data: [Article], method:String, index:Int) {
         switch method {
         case "GET":
-            self.articles.append(contentsOf: data)
+            self.articles.removeAll()
+            self.articles=data
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
-            
-            print("Get and reload data successfully!")
+            print("Refreshing...")
         case "DELETE":
             print("Delete successfully! \(index)")
             tableView.reloadData()
         case "POST":
+            self.articles.removeAll()
             self.presenter?.fetchArticle(page: 1, limit: 15)
         default:
             break
