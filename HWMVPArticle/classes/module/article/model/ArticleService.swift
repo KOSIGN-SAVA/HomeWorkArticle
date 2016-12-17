@@ -74,7 +74,7 @@ class ArticleService{
         post.1.addValue("application/json", forHTTPHeaderField: "Content-Type")
         post.1.httpBody=try! JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
         post.0.dataTask(with: post.1, completionHandler: {(responseBody, httpResponse, error) in
-            if error==nil{
+            if error==nil {
                 self.delegate?.success([], method: "POST", index: 0)
             }else{
                 self.delegate?.error(method: "POST")

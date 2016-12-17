@@ -8,15 +8,11 @@
 
 import UIKit
 
-class MainViewController: UIViewController {
+class MainViewController: UIViewController{
 
     @IBOutlet weak var tableView: UITableView!
     var presenter:ArticlePresenter?
-    var articles:[Article]=[]
-    
-    override func viewDidAppear(_ animated: Bool) {
-        tableView.reloadData()
-    }
+    var articles:[Article]=[Article]()
     
     var s:String="fdsfs"
     
@@ -27,19 +23,33 @@ class MainViewController: UIViewController {
         return "\(date)"
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        presenter?.fetchArticle(page: 1, limit: 15)
-        tableView.reloadData()
+    func postArticleFromMain(titleArti:String, descArti:String, imgArti:String){
+        print("start to post")
+        presenter=ArticlePresenter()
+        presenter?.delegate=self
+        presenter?.postArticle(titleArt: titleArti, descriptionArt: descArti, imgLink: imgArti)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         //self.navigationItem.rightBarButtonItem = self.editButtonItem
-        tableView.delegate=self
-        tableView.dataSource=self
+        
         presenter=ArticlePresenter()
         presenter?.delegate=self
-        presenter?.fetchArticle(page: 1, limit: 15)
+    }
+    @IBAction func reloadPress(_ sender: UIBarButtonItem) {
+        DispatchQueue.main.async {
+            self.presenter?.fetchArticle(page: 1, limit: 15)
+            self.tableView.reloadData()
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        print("loaded!")
+        DispatchQueue.main.async {
+            self.presenter?.fetchArticle(page: 1, limit: 15)
+            self.tableView.reloadData()
+        }
     }
 
 }
@@ -102,16 +112,17 @@ extension MainViewController:ArticlePresenterProtocol{
     func responseData(_ data: [Article], method:String, index:Int) {
         switch method {
         case "GET":
-            articles.append(contentsOf: data)
-            tableView.reloadData()
-            print("Get data successfully!")
+            self.articles.append(contentsOf: data)
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
+            
+            print("Get and reload data successfully!")
         case "DELETE":
             print("Delete successfully! \(index)")
-            //articles.remove(at: index)
             tableView.reloadData()
         case "POST":
-            print("Post successfully!")
-            tableView.reloadData()
+            self.presenter?.fetchArticle(page: 1, limit: 15)
         default:
             break
         }

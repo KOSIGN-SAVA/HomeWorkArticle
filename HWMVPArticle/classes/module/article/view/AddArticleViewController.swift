@@ -13,6 +13,7 @@ class AddArticleViewController: UIViewController, UIImagePickerControllerDelegat
     @IBOutlet weak var thumnailImg: UIImageView!
     @IBOutlet weak var titleArticle: UITextField!
     @IBOutlet weak var descriptionArticle: UITextView!
+    var main=MainViewController()
     
     var imgThum:UIImagePickerController!
     var presenter:ArticlePresenter?
@@ -36,28 +37,43 @@ class AddArticleViewController: UIViewController, UIImagePickerControllerDelegat
         }
         imgThum.dismiss(animated: true, completion: nil)
     }
+    
     @IBAction func postPress(_ sender: UIBarButtonItem) {
-        print("202")
-        presenter?.postArticle(titleArt: titleArticle.text!, descriptionArt: descriptionArticle.text, imgLink: "https://pbs.twimg.com/profile_images/689302419952422912/KhGmx7aj_400x400.jpg")
+//        main.postArticleFromMain(titleArti: titleArticle.text!, descArti: descriptionArticle.text!, imgArti: "https:static-secure.guim.co.uk/sys-images/Guardian/Pix/pictures/2013/12/10/1386683878775/POL-POT-006.jpg")
+//        _=navigationController?.popViewController(animated: true)
+        
+        presenter?.postArticle(titleArt: titleArticle.text!, descriptionArt: descriptionArticle.text!, imgLink: "")
+        _=navigationController?.popViewController(animated: true)
+        
     }
 
     @IBAction func cancelPress(_ sender: UIBarButtonItem) {
         _=navigationController?.popViewController(animated: true)
     }
+    
 }
 
 extension AddArticleViewController:ArticlePresenterProtocol{
-    
     func startFetchArticle() {
         //
     }
-    
     func responseData(_ data: [Article], method: String, index: Int) {
-        _=navigationController?.popViewController(animated: true)
+        print("posted")
     }
-    
     func responseDataError() {
         //
     }
-    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

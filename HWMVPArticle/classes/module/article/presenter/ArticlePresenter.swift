@@ -38,7 +38,7 @@ class ArticlePresenter:ModelProtocol{
         case "DELETE":
             delegate?.responseData([], method: method, index: index)
         case "POST":
-            delegate?.responseData([], method: method, index: index)
+            delegate?.responseData(article, method: method, index: index)
         default: break
         }
     }
