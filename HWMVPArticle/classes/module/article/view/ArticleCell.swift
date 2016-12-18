@@ -12,7 +12,6 @@ class ArticleCell: UITableViewCell {
 
     @IBOutlet weak var articleThumnail: UIImageView!
     @IBOutlet weak var articleTitle: UILabel!
-    @IBOutlet weak var articleDate: UILabel!
     @IBOutlet weak var articleDescription: UILabel!
 
 }

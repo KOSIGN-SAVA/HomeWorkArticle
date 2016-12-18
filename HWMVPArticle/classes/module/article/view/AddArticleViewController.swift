@@ -15,16 +15,27 @@ class AddArticleViewController: UIViewController, UIImagePickerControllerDelegat
     @IBOutlet weak var descriptionArticle: UITextView!
     var main=MainViewController()
     
+    var myActivityIndicator : UIActivityIndicatorView!
     var imgThum:UIImagePickerController!
     var presenter:ArticlePresenter?
+    var id:Int?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title="Add article"
+        self.title="Add/Edit"
+        myActivityIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.gray)
+        myActivityIndicator.center = view.center
+        myActivityIndicator.hidesWhenStopped = true
+        //myActivityIndicator.startAnimating()
         imgThum=UIImagePickerController()
         imgThum.delegate=self
         presenter=ArticlePresenter()
         presenter?.delegate=self
+        if let i=id {
+            if i>0{
+                presenter?.fetchArticleById(id: id!)
+            }
+        }
         // Do any additional setup after loading the view.
     }
     @IBAction func loadImage(_ sender: UIButton) {
@@ -39,11 +50,9 @@ class AddArticleViewController: UIViewController, UIImagePickerControllerDelegat
     }
     
     @IBAction func postPress(_ sender: UIBarButtonItem) {
-//        main.postArticleFromMain(titleArti: titleArticle.text!, descArti: descriptionArticle.text!, imgArti: "https:static-secure.guim.co.uk/sys-images/Guardian/Pix/pictures/2013/12/10/1386683878775/POL-POT-006.jpg")
-//        _=navigationController?.popViewController(animated: true)
-        
-        presenter?.postArticle(titleArt: titleArticle.text!, descriptionArt: descriptionArticle.text!, imgLink: "http://i2.mirror.co.uk/incoming/article8372768.ece/ALTERNATES/s810/Pogba-United-main.jpg")
-        //_=navigationController?.popViewController(animated: true)
+        view.addSubview(myActivityIndicator)
+        myActivityIndicator.startAnimating()
+        self.presenter?.uploadImage(img: self.thumnailImg)
     }
 
     @IBAction func cancelPress(_ sender: UIBarButtonItem) {
@@ -54,15 +63,41 @@ class AddArticleViewController: UIViewController, UIImagePickerControllerDelegat
 
 extension AddArticleViewController:ArticlePresenterProtocol{
     func startFetchArticle() {
-        //
+        view.addSubview(myActivityIndicator)
+        myActivityIndicator.startAnimating()
+    }
+    func responseImageURL(resImgUrl: String) {
+        print("Upload image successfully!")
+        if self.id==nil{
+            self.presenter?.postArticle(titleArt: self.titleArticle.text!, descriptionArt: self.descriptionArticle.text!, imgLink: resImgUrl)
+        }else{
+            self.presenter?.updateArticle(titleArt: self.titleArticle.text!, descriptionArt: self.descriptionArticle.text!, imgLink: resImgUrl, id: self.id!)
+        }
     }
     func responseData(_ data: [Article], method: String, index: Int) {
-//        let sender=UIBarButtonItem()
-//        cancelPress(sender)
-        DispatchQueue.main.async {
-            _=self.navigationController?.popViewController(animated: true)
+        switch method {
+        case "GET":
+            DispatchQueue.main.async {
+                self.thumnailImg.downloadedFrom(link: data[0].image)
+                self.titleArticle.text=data[0].title
+                self.descriptionArticle.text=data[0].description
+                self.myActivityIndicator.stopAnimating()
+            }
+        case "POST":
+            print("Posted")
+            myActivityIndicator.stopAnimating()
+            DispatchQueue.main.async {
+                _=self.navigationController?.popViewController(animated: true)
+            }
+        case "PUT":
+            print("Updated")
+            myActivityIndicator.stopAnimating()
+            DispatchQueue.main.async {
+                _=self.navigationController?.popViewController(animated: true)
+            }
+        default:
+            break;
         }
-        print("ff")
     }
     func responseDataError() {
         //

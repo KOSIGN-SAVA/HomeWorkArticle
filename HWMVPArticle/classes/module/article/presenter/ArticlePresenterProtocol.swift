@@ -12,4 +12,5 @@ protocol ArticlePresenterProtocol {
     func startFetchArticle()
     func responseData(_ data:[Article], method:String, index:Int)
     func responseDataError()
+    func responseImageURL(resImgUrl:String)
 }

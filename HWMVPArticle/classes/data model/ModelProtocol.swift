@@ -9,6 +9,7 @@
 import Foundation
 
 protocol ModelProtocol {
+    func returnUploadedURLImage(urlImg:String)
     func success(_ article:[Article], method:String, index:Int)
     func error(method:String)
 }

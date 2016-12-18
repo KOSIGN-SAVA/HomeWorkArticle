@@ -13,14 +13,15 @@ class MainViewController: UIViewController{
     @IBOutlet weak var tableView: UITableView!
     var presenter:ArticlePresenter?
     var articles:[Article]=[Article]()
+    var refreshTool:UIRefreshControl!
     
-    var s:String="fdsfs"
+    func handleRefresh(_ refreshControl: UIRefreshControl) {
+        self.presenter?.fetchArticle(page: 1, limit: 10)
+    }
     
-    func toStandardDate(dateStr:String)->String{
-        let s=NSString(string: dateStr)
-        let st=s.doubleValue
-        let date=Date(timeIntervalSinceReferenceDate: st)
-        return "\(date)"
+    func updateData(){
+        // When Delegate from Service stop the refresh
+        tableView.refreshControl?.endRefreshing()
     }
     
     func postArticleFromMain(titleArti:String, descArti:String, imgArti:String){
@@ -30,28 +31,19 @@ class MainViewController: UIViewController{
         presenter?.postArticle(titleArt: titleArti, descriptionArt: descArti, imgLink: imgArti)
     }
     
-//    override func viewDidLoad() {
-//        super.viewDidLoad()
-//        presenter=ArticlePresenter()
-//        presenter?.delegate=self
-//        DispatchQueue.main.async {
-//            self.presenter?.fetchArticle(page: 1, limit: 15)
-//            self.tableView.reloadData()
-//        }
-//    }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        refreshTool=UIRefreshControl()
+        tableView.refreshControl?.isEnabled=true
+        tableView.refreshControl=UIRefreshControl()
+        tableView.refreshControl?.addTarget(self, action: #selector(self.handleRefresh(_:)), for: .valueChanged)
+    }
     
     override func viewWillAppear(_ animated: Bool) {
         presenter=ArticlePresenter()
         presenter?.delegate=self
+        presenter?.fetchArticle(page: 1, limit: 10)
         DispatchQueue.main.async {
-            self.presenter?.fetchArticle(page: 1, limit: 15)
-            self.tableView.reloadData()
-        }
-    }
-    
-    @IBAction func reloadPress(_ sender: UIBarButtonItem) {
-        DispatchQueue.main.async {
-            self.presenter?.fetchArticle(page: 1, limit: 15)
             self.tableView.reloadData()
         }
     }
@@ -71,7 +63,6 @@ extension MainViewController:UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell=tableView.dequeueReusableCell(withIdentifier: "idarticle", for: indexPath) as? ArticleCell{
             cell.articleTitle.text=articles[indexPath.row].title
-            cell.articleDate.text=toStandardDate(dateStr: articles[indexPath.row].createDate)
             cell.articleDescription.text=articles[indexPath.row].description
             cell.articleThumnail.downloadedFrom(link: articles[indexPath.row].image)
             return cell
@@ -91,19 +82,22 @@ extension MainViewController:UITableViewDelegate, UITableViewDataSource {
         }
         
         let editAction = UITableViewRowAction(style: .normal, title: "Edit") { (action, indexPath) in
-            // share item at indexPath
+            let id=self.articles[indexPath.row].id
+            self.performSegue(withIdentifier: "idtupdate", sender: id)
         }
         editAction.backgroundColor = UIColor.purple
         return [deleteAction, editAction]
     }
     
-//    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-//        if editingStyle == .delete {
-//            self.presenter?.deleteArticle(id: self.articles[indexPath.row].id, index: indexPath.row)
-//            articles.remove(at: indexPath.row)
-//            tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.fade)
-//        }
-//    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier=="idtupdate" {
+            if let updateForm=segue.destination as? AddArticleViewController{
+                if let id=sender as? Int{
+                    updateForm.id=id
+                }
+            }
+        }
+    }
     
 }
 
@@ -111,6 +105,13 @@ extension MainViewController:ArticlePresenterProtocol{
     
     func startFetchArticle() {
         print("start fetch article")
+        tableView.refreshControl?.beginRefreshing()
+        let timer = Timer.init(timeInterval: 10, target: self, selector: #selector(updateData), userInfo: nil, repeats: false)
+        timer.fire()
+    }
+    
+    func responseImageURL(resImgUrl: String) {
+        //not use
     }
     
     func responseData(_ data: [Article], method:String, index:Int) {
@@ -120,21 +121,19 @@ extension MainViewController:ArticlePresenterProtocol{
             self.articles=data
             DispatchQueue.main.async {
                 self.tableView.reloadData()
+                self.tableView.refreshControl?.endRefreshing()
             }
             print("Refreshing...")
         case "DELETE":
             print("Delete successfully! \(index)")
             tableView.reloadData()
-        case "POST":
-            self.articles.removeAll()
-            self.presenter?.fetchArticle(page: 1, limit: 15)
         default:
             break
         }
     }
     
     func responseDataError() {
-        //error
+        print("Error get data from API.")
     }
     
 }
